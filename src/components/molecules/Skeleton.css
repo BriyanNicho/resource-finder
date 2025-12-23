@@ -1,0 +1,184 @@
+/* Skeleton Base Styles */
+.skeleton-box {
+    background: linear-gradient(90deg,
+            var(--bg-card) 0%,
+            var(--bg-elevated) 50%,
+            var(--bg-card) 100%);
+    background-size: 200% 100%;
+}
+
+.radius-sm {
+    border-radius: var(--radius-sm);
+}
+
+.radius-md {
+    border-radius: var(--radius-md);
+}
+
+.radius-lg {
+    border-radius: var(--radius-lg);
+}
+
+.radius-full {
+    border-radius: var(--radius-full);
+}
+
+/* Skeleton Text */
+.skeleton-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.skeleton-text {
+    height: 14px;
+    background: linear-gradient(90deg,
+            var(--bg-card) 0%,
+            var(--bg-elevated) 50%,
+            var(--bg-card) 100%);
+    background-size: 200% 100%;
+    border-radius: var(--radius-sm);
+}
+
+/* FacilityCard Skeleton */
+.skeleton-facility-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.skeleton-image {
+    width: 100%;
+    height: 140px;
+    background: linear-gradient(90deg,
+            var(--bg-secondary) 0%,
+            var(--bg-elevated) 50%,
+            var(--bg-secondary) 100%);
+    background-size: 200% 100%;
+}
+
+.skeleton-content {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.skeleton-meta {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.skeleton-specs {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.skeleton-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border-primary);
+    margin-top: var(--space-xs);
+}
+
+/* FacilityDetail Skeleton */
+.skeleton-facility-detail {
+    min-height: 100vh;
+}
+
+.skeleton-detail-header {
+    position: relative;
+    height: 280px;
+}
+
+.skeleton-header-image {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            var(--bg-secondary) 0%,
+            var(--bg-elevated) 50%,
+            var(--bg-secondary) 100%);
+    background-size: 200% 100%;
+}
+
+.skeleton-header-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    background: linear-gradient(to top, var(--bg-primary) 0%, transparent 100%);
+}
+
+.skeleton-detail-content {
+    padding: var(--space-lg);
+}
+
+/* Stats Row Skeleton */
+.skeleton-stats-row {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.skeleton-stat-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+}
+
+.skeleton-stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+/* Section Skeleton */
+.skeleton-section {
+    margin-bottom: var(--space-xl);
+}
+
+.skeleton-section-title {
+    margin-bottom: var(--space-md);
+}
+
+.skeleton-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+/* Time Grid Skeleton */
+.skeleton-time-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+}
+
+.skeleton-time-slot {
+    height: 56px;
+    background: linear-gradient(90deg,
+            var(--bg-card) 0%,
+            var(--bg-elevated) 50%,
+            var(--bg-card) 100%);
+    background-size: 200% 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-primary);
+}
+
+/* Booking Ticket Skeleton */
+.skeleton-booking-ticket {
+    padding: var(--space-md);
+}

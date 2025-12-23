@@ -94,6 +94,8 @@ const FacilityDetail = lazy(() => import('./pages/FacilityDetail'));
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const Assets = lazy(() => import('./pages/admin/Assets'));
 const Issues = lazy(() => import('./pages/admin/Issues'));
+const ActivityLog = lazy(() => import('./pages/ActivityLog'));
+const AdminActivityLog = lazy(() => import('./pages/admin/ActivityLog'));
 
 // Loading Spinner
 function LoadingSpinner() {
@@ -150,6 +152,7 @@ function AppRoutes() {
         <Route path="my-booking" element={<Suspense fallback={<LoadingSpinner />}><MyBooking /></Suspense>} />
         <Route path="profile" element={<Suspense fallback={<LoadingSpinner />}><Profile /></Suspense>} />
         <Route path="facility/:id" element={<Suspense fallback={<LoadingSpinner />}><FacilityDetail /></Suspense>} />
+        <Route path="activity" element={<Suspense fallback={<LoadingSpinner />}><ActivityLog /></Suspense>} />
       </Route>
 
       {/* Admin Routes */}
@@ -161,6 +164,7 @@ function AppRoutes() {
         <Route index element={<Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>} />
         <Route path="assets" element={<Suspense fallback={<LoadingSpinner />}><Assets /></Suspense>} />
         <Route path="issues" element={<Suspense fallback={<LoadingSpinner />}><Issues /></Suspense>} />
+        <Route path="activity" element={<Suspense fallback={<LoadingSpinner />}><AdminActivityLog /></Suspense>} />
       </Route>
 
       {/* Redirect unknown routes */}

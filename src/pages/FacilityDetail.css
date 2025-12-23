@@ -79,15 +79,15 @@
 
 /* Content */
 .detail-content {
-    padding: var(--space-lg);
-    padding-bottom: calc(var(--bottom-nav-height) + var(--space-xl));
+    padding: var(--space-xl);
+    padding-bottom: calc(var(--bottom-nav-height) + var(--space-2xl));
 }
 
 /* Stats Row */
 .stats-row {
     display: flex;
-    gap: var(--space-md);
-    margin-bottom: var(--space-xl);
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
 }
 
 .stat-item {
@@ -123,14 +123,14 @@
 
 /* Sections */
 .detail-section {
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-2xl);
 }
 
 .section-title {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-lg);
 }
 
 .subsection-title {

@@ -1,8 +1,8 @@
 .booking-ticket-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,9 +14,26 @@
     position: relative;
     width: 100%;
     max-width: 360px;
-    background: var(--bg-card);
+    background: linear-gradient(180deg,
+            var(--bg-card) 0%,
+            rgba(30, 41, 59, 0.95) 100%);
     border-radius: var(--radius-xl);
     overflow: hidden;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(99, 102, 241, 0.2),
+        0 0 60px rgba(99, 102, 241, 0.15);
+}
+
+/* Ticket paper texture effect */
+.booking-ticket::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .close-btn {
@@ -34,6 +51,7 @@
     color: var(--text-secondary);
     cursor: pointer;
     transition: all var(--transition-fast);
+    z-index: 10;
 }
 
 .close-btn:hover {
@@ -43,12 +61,13 @@
 
 .ticket-header {
     text-align: center;
-    padding: var(--space-xl) var(--space-lg) var(--space-lg);
+    padding: var(--space-2xl) var(--space-lg) var(--space-lg);
 }
 
 .success-icon {
-    font-size: 48px;
+    color: var(--status-available);
     margin-bottom: var(--space-md);
+    filter: drop-shadow(0 0 12px var(--status-available));
 }
 
 .ticket-header h2 {
@@ -69,6 +88,9 @@
     padding: var(--space-lg);
     border-radius: var(--radius-lg);
     color: var(--bg-primary);
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 
 .qr-hint {
@@ -77,47 +99,51 @@
     margin-top: var(--space-md);
 }
 
+/* Enhanced perforation divider */
 .ticket-divider {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 0 var(--space-md);
+    padding: var(--space-sm) 0;
+    margin: 0 var(--space-xs);
 }
 
 .divider-notch {
-    width: 20px;
-    height: 20px;
-    background: var(--bg-primary);
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.85);
     border-radius: 50%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .divider-notch.left {
-    margin-left: -10px;
+    margin-left: -12px;
 }
 
 .divider-notch.right {
-    margin-right: -10px;
+    margin-right: -12px;
 }
 
 .divider-line {
     flex: 1;
     height: 2px;
     background: repeating-linear-gradient(to right,
-            var(--border-primary) 0,
-            var(--border-primary) 8px,
-            transparent 8px,
-            transparent 16px);
+            var(--border-secondary) 0,
+            var(--border-secondary) 6px,
+            transparent 6px,
+            transparent 12px);
+    opacity: 0.6;
 }
 
 .ticket-details {
-    padding: var(--space-lg);
+    padding: var(--space-lg) var(--space-xl);
 }
 
 .ticket-details .facility-name {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-lg);
     text-align: center;
 }
 
@@ -127,7 +153,12 @@
     gap: var(--space-sm);
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.detail-row svg {
+    color: var(--primary-400);
+    flex-shrink: 0;
 }
 
 .time-slot {
@@ -135,9 +166,10 @@
     justify-content: space-between;
     align-items: center;
     background: var(--bg-elevated);
-    padding: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
     border-radius: var(--radius-md);
-    margin-top: var(--space-md);
+    margin-top: var(--space-lg);
+    border: 1px solid var(--border-primary);
 }
 
 .time-label {
@@ -157,20 +189,26 @@
     justify-content: center;
     gap: var(--space-sm);
     background: rgba(99, 102, 241, 0.1);
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-md);
     border-radius: var(--radius-md);
     margin-top: var(--space-md);
     font-weight: var(--font-weight-semibold);
     color: var(--primary-400);
+    border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .ticket-warning {
-    background: rgba(245, 158, 11, 0.1);
+    background: linear-gradient(90deg,
+            rgba(245, 158, 11, 0.1) 0%,
+            rgba(245, 158, 11, 0.15) 50%,
+            rgba(245, 158, 11, 0.1) 100%);
     color: var(--status-warning);
     text-align: center;
-    padding: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
+    border-top: 1px solid rgba(245, 158, 11, 0.2);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .ticket-actions {
@@ -182,4 +220,8 @@
 
 .text-danger {
     color: var(--status-full) !important;
+}
+
+.text-danger:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
 }

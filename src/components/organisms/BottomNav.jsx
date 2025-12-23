@@ -26,7 +26,10 @@ function BottomNav() {
                             to={item.path}
                             className={`nav-item ${isActive ? 'active' : ''}`}
                         >
-                            <div className="nav-icon-wrapper">
+                            <motion.div
+                                className="nav-icon-wrapper"
+                                whileTap={{ scale: 0.9 }}
+                            >
                                 {isActive && (
                                     <motion.div
                                         className="nav-indicator"
@@ -44,8 +47,21 @@ function BottomNav() {
                                     strokeWidth={isActive ? 2.5 : 2}
                                     className="nav-icon"
                                 />
-                            </div>
+                            </motion.div>
                             <span className="nav-label">{item.label}</span>
+                            {isActive && (
+                                <motion.div
+                                    className="nav-active-dot"
+                                    layoutId="navDot"
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 500,
+                                        damping: 30
+                                    }}
+                                />
+                            )}
                         </NavLink>
                     );
                 })}

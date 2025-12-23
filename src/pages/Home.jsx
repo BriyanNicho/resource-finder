@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import FreeTimeCard from '../components/molecules/FreeTimeCard';
 import FacilityCard from '../components/molecules/FacilityCard';
-import ScheduleTimeline from '../components/molecules/ScheduleTimeline';
-import { facilities, freeTimeSlots, todaySchedule } from '../utils/mockData';
+import FacilityDensityWidget from '../components/molecules/FacilityDensityWidget';
+import { facilities, freeTimeSlots } from '../utils/mockData';
 import './Home.css';
 
 function Home() {
@@ -45,14 +45,14 @@ function Home() {
                     </div>
                 </motion.section>
 
-                {/* Today's Schedule */}
+                {/* Facility Density Widget (replaces Schedule) */}
                 <motion.section
                     className="section"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.2 }}
                 >
-                    <ScheduleTimeline schedule={todaySchedule} />
+                    <FacilityDensityWidget />
                 </motion.section>
             </div>
         </div>

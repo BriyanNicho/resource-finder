@@ -11,3 +11,7 @@
     padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
     overflow-y: auto;
 }
+
+.page-wrapper {
+    min-height: 100%;
+}

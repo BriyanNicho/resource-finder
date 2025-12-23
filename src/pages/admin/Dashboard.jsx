@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Users, Clock, AlertCircle, CheckCircle } from 'lucide-react';
+import { Users, Clock, AlertCircle, CheckCircle, BarChart3, Wrench, TrendingUp, Monitor } from 'lucide-react';
 import { facilities } from '../../utils/mockData';
 import './Dashboard.css';
 
@@ -10,6 +10,20 @@ function Dashboard() {
         { label: 'Isu Aktif', value: '3', icon: AlertCircle, color: 'text-danger' },
         { label: 'Rata-rata Durasi', value: '1.5h', icon: Clock, color: 'text-warning' },
     ];
+
+    // Get top 3 most-used PCs from all facilities
+    const allComputers = facilities
+        .filter(f => f.computers)
+        .flatMap(f => f.computers.map(pc => ({
+            ...pc,
+            facility: f.name,
+            facilityId: f.id
+        })))
+        .sort((a, b) => (b.usageCount || 0) - (a.usageCount || 0))
+        .slice(0, 3);
+
+    // Calculate max usage for bar width
+    const maxUsage = Math.max(...allComputers.map(pc => pc.usageCount || 0));
 
     return (
         <div className="admin-dashboard">
@@ -36,6 +50,65 @@ function Dashboard() {
                     );
                 })}
             </div>
+
+            {/* Asset Insights Section */}
+            <motion.div
+                className="insights-section"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+            >
+                <div className="section-header">
+                    <div className="section-title-group">
+                        <BarChart3 size={20} className="section-icon" />
+                        <h3 className="section-title">Asset Insights</h3>
+                    </div>
+                    <span className="insights-badge">
+                        <TrendingUp size={14} /> Top Digunakan
+                    </span>
+                </div>
+
+                <div className="insights-description">
+                    <Wrench size={14} />
+                    <span>PC dengan penggunaan tinggi perlu rotasi maintenance lebih sering</span>
+                </div>
+
+                <div className="top-pcs-list">
+                    {allComputers.map((pc, index) => (
+                        <motion.div
+                            key={`${pc.facilityId}-${pc.id}`}
+                            className="top-pc-item"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5 + index * 0.1 }}
+                        >
+                            <div className="pc-rank">#{index + 1}</div>
+                            <div className="pc-details">
+                                <div className="pc-header">
+                                    <Monitor size={16} />
+                                    <span className="pc-name">{pc.id}</span>
+                                    <span className="pc-facility">{pc.facility}</span>
+                                </div>
+                                <div className="pc-usage-bar">
+                                    <motion.div
+                                        className="usage-fill"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${(pc.usageCount / maxUsage) * 100}%` }}
+                                        transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
+                                    />
+                                </div>
+                                <div className="pc-stats">
+                                    <span>{pc.usageCount} sesi</span>
+                                    <span>{pc.totalHours}h total</span>
+                                </div>
+                            </div>
+                            {pc.status === 'maintenance' && (
+                                <span className="maintenance-badge">🔧 Maintenance</span>
+                            )}
+                        </motion.div>
+                    ))}
+                </div>
+            </motion.div>
 
             {/* Live Occupancy */}
             <div className="section-header">

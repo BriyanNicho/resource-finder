@@ -29,14 +29,32 @@ function FacilityCard({ facility, index = 0 }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
+            whileHover={{
+                y: -6,
+                transition: { duration: 0.2 }
+            }}
+            whileTap={{
+                scale: 0.98,
+                transition: { duration: 0.1 }
+            }}
             onClick={() => navigate(`/facility/${facility.id}`)}
         >
             <div className="facility-image">
-                <img src={facility.image} alt={facility.name} />
-                <span className={`facility-status badge badge-${statusConfig.class}`}>
+                <motion.img
+                    src={facility.image}
+                    alt={facility.name}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                />
+                <motion.span
+                    className={`facility-status badge badge-${statusConfig.class}`}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
+                >
                     <span className={`status-dot ${statusConfig.dotClass}`} />
                     {statusConfig.label}
-                </span>
+                </motion.span>
             </div>
 
             <div className="facility-content">
@@ -55,7 +73,15 @@ function FacilityCard({ facility, index = 0 }) {
 
                 <div className="facility-specs">
                     {facility.software?.slice(0, 2).map((sw, i) => (
-                        <span key={i} className="spec-chip">{sw}</span>
+                        <motion.span
+                            key={i}
+                            className="spec-chip"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.3 + i * 0.05 }}
+                        >
+                            {sw}
+                        </motion.span>
                     ))}
                     {facility.software?.length > 2 && (
                         <span className="spec-chip more">+{facility.software.length - 2}</span>
@@ -64,7 +90,13 @@ function FacilityCard({ facility, index = 0 }) {
 
                 <div className="facility-footer">
                     <span className="distance">📍 {facility.distance}m</span>
-                    <ChevronRight size={18} className="chevron" />
+                    <motion.div
+                        className="chevron-wrapper"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 4 }}
+                    >
+                        <ChevronRight size={18} className="chevron" />
+                    </motion.div>
                 </div>
             </div>
         </motion.div>

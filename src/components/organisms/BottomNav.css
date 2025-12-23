@@ -45,6 +45,11 @@
     color: var(--primary-400);
 }
 
+.nav-item.active .nav-label {
+    color: var(--primary-400);
+    font-weight: var(--font-weight-semibold);
+}
+
 .nav-icon-wrapper {
     position: relative;
     display: flex;
@@ -69,4 +74,16 @@
 .nav-label {
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
+    transition: all var(--transition-fast);
+}
+
+/* Active dot indicator */
+.nav-active-dot {
+    position: absolute;
+    bottom: 2px;
+    width: 4px;
+    height: 4px;
+    background: var(--primary-400);
+    border-radius: var(--radius-full);
+    box-shadow: 0 0 8px var(--primary-400);
 }
