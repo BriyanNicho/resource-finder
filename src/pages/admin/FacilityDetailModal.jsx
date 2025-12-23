@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Wrench, Monitor, AlertCircle, CheckCircle, Power } from 'lucide-react';
+import { X, Wrench, Monitor, AlertCircle, CheckCircle, Power, Trash2, AlertTriangle } from 'lucide-react';
 import './FacilityDetailModal.css';
 
-function FacilityDetailModal({ facility, onClose, onUpdateFacility }) {
+function FacilityDetailModal({ facility, onClose, onUpdateFacility, onDeleteFacility }) {
     const [localFacility, setLocalFacility] = useState(facility);
-
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     // Check if room maintenance is fully enabled
     const isRoomMaintenance = localFacility.status === 'maintenance';
 
@@ -201,6 +201,51 @@ function FacilityDetailModal({ facility, onClose, onUpdateFacility }) {
                         <p>Fasilitas ini tidak memiliki komputer individual</p>
                     </div>
                 )}
+
+                {/* Danger Zone */}
+                <div className="danger-zone">
+                    <div className="danger-header">
+                        <AlertTriangle size={18} />
+                        <h4>Zona Bahaya</h4>
+                    </div>
+                    <p className="danger-description">
+                        Tindakan di bawah ini bersifat permanen dan tidak dapat dibatalkan.
+                    </p>
+
+                    {!showDeleteConfirm ? (
+                        <button
+                            className="danger-btn"
+                            onClick={() => setShowDeleteConfirm(true)}
+                        >
+                            <Trash2 size={16} />
+                            Hapus Fasilitas
+                        </button>
+                    ) : (
+                        <div className="delete-confirm">
+                            <p>Yakin ingin menghapus <strong>{localFacility.name}</strong>?</p>
+                            <div className="confirm-actions">
+                                <button
+                                    className="btn-cancel"
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    className="btn-delete"
+                                    onClick={() => {
+                                        if (onDeleteFacility) {
+                                            onDeleteFacility(localFacility.id);
+                                        }
+                                        onClose();
+                                    }}
+                                >
+                                    <Trash2 size={14} />
+                                    Ya, Hapus
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </motion.div>
         </motion.div>
     );

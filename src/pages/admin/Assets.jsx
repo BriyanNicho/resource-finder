@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Plus, Wrench, Trash2, MoreVertical, AlertTriangle } from 'lucide-react';
+import { Plus, Wrench, MoreVertical, AlertTriangle, Calendar } from 'lucide-react';
 import { facilities } from '../../utils/mockData';
 import FacilityDetailModal from './FacilityDetailModal';
 import './Assets.css';
@@ -118,6 +118,7 @@ function Assets() {
                             <th>Facility Name</th>
                             <th>Location</th>
                             <th>Capacity</th>
+                            <th>Last Serviced</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -142,6 +143,12 @@ function Assets() {
                                     <td>{asset.building} - {asset.floor}</td>
                                     <td>{asset.capacity} Seats</td>
                                     <td>
+                                        <span className="last-serviced">
+                                            <Calendar size={12} />
+                                            {asset.lastServiced ? new Date(asset.lastServiced).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
+                                        </span>
+                                    </td>
+                                    <td>
                                         <span className={`status-pill ${statusDisplay.class}`}>
                                             {statusDisplay.maintenanceCount && (
                                                 <AlertTriangle size={12} />
@@ -157,13 +164,6 @@ function Assets() {
                                                 onClick={(e) => toggleStatus(asset.id, e)}
                                             >
                                                 <Wrench size={18} />
-                                            </button>
-                                            <button
-                                                className="action-btn text-danger"
-                                                title="Remove"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                <Trash2 size={18} />
                                             </button>
                                             <button
                                                 className="action-btn"
@@ -188,6 +188,10 @@ function Assets() {
                         facility={selectedFacility}
                         onClose={handleCloseModal}
                         onUpdateFacility={handleUpdateFacility}
+                        onDeleteFacility={(id) => {
+                            setAssetList(prev => prev.filter(item => item.id !== id));
+                            handleCloseModal();
+                        }}
                     />
                 )}
             </AnimatePresence>

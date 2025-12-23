@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Clock, AlertCircle, CheckCircle, BarChart3, Wrench, TrendingUp, Monitor, History, MapPin, LogIn, LogOut, Calendar } from 'lucide-react';
+import { Users, Clock, AlertCircle, CheckCircle, BarChart3, Wrench, TrendingUp, Monitor, History, MapPin, LogIn, LogOut, Calendar, AlertTriangle, Download, FileText } from 'lucide-react';
 import { facilities, activityLogs } from '../../utils/mockData';
 import './Dashboard.css';
 
 function Dashboard() {
+    const [isDownloading, setIsDownloading] = useState(false);
+
     const stats = [
         { label: 'Total Booking', value: '124', icon: CheckCircle, color: 'text-success' },
         { label: 'Sedang Digunakan', value: '45', icon: Users, color: 'text-primary' },
@@ -21,6 +24,16 @@ function Dashboard() {
         })))
         .sort((a, b) => (b.usageCount || 0) - (a.usageCount || 0))
         .slice(0, 3);
+
+    // Get PCs needing maintenance (usageCount > 200)
+    const maintenanceAlerts = facilities
+        .filter(f => f.computers)
+        .flatMap(f => f.computers.map(pc => ({
+            ...pc,
+            facility: f.name,
+            facilityId: f.id
+        })))
+        .filter(pc => (pc.usageCount || 0) > 200);
 
     // Calculate max usage for bar width
     const maxUsage = Math.max(...allComputers.map(pc => pc.usageCount || 0));
@@ -53,8 +66,39 @@ function Dashboard() {
         }
     };
 
+    const handleDownloadReport = () => {
+        setIsDownloading(true);
+        // Simulate download
+        setTimeout(() => {
+            setIsDownloading(false);
+            alert('Laporan Bulanan berhasil diunduh!');
+        }, 1500);
+    };
+
     return (
         <div className="admin-dashboard">
+            {/* Dashboard Header with Download Button */}
+            <div className="dashboard-header">
+                <h2 className="dashboard-title">Dashboard Admin</h2>
+                <button
+                    className="btn btn-secondary download-btn"
+                    onClick={handleDownloadReport}
+                    disabled={isDownloading}
+                >
+                    {isDownloading ? (
+                        <>
+                            <span className="spinner-small" />
+                            Mengunduh...
+                        </>
+                    ) : (
+                        <>
+                            <Download size={16} />
+                            Unduh Laporan Bulanan
+                        </>
+                    )}
+                </button>
+            </div>
+
             {/* Stats Grid */}
             <div className="stats-grid">
                 {stats.map((stat, i) => {
@@ -79,65 +123,116 @@ function Dashboard() {
                 })}
             </div>
 
-            {/* Asset Insights Section */}
-            <motion.div
-                className="insights-section"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-            >
-                <div className="section-header">
-                    <div className="section-title-group">
-                        <BarChart3 size={20} className="section-icon" />
-                        <h3 className="section-title">Asset Insights</h3>
+            {/* Two Column Layout */}
+            <div className="dashboard-grid">
+                {/* Asset Insights Section */}
+                <motion.div
+                    className="insights-section"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    <div className="section-header">
+                        <div className="section-title-group">
+                            <BarChart3 size={20} className="section-icon" />
+                            <h3 className="section-title">Asset Insights</h3>
+                        </div>
+                        <span className="insights-badge">
+                            <TrendingUp size={14} /> Top Digunakan
+                        </span>
                     </div>
-                    <span className="insights-badge">
-                        <TrendingUp size={14} /> Top Digunakan
-                    </span>
-                </div>
 
-                <div className="insights-description">
-                    <Wrench size={14} />
-                    <span>PC dengan penggunaan tinggi perlu rotasi maintenance lebih sering</span>
-                </div>
+                    <div className="insights-description">
+                        <Wrench size={14} />
+                        <span>PC dengan penggunaan tinggi perlu rotasi maintenance</span>
+                    </div>
 
-                <div className="top-pcs-list">
-                    {allComputers.map((pc, index) => (
-                        <motion.div
-                            key={`${pc.facilityId}-${pc.id}`}
-                            className="top-pc-item"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.5 + index * 0.1 }}
-                        >
-                            <div className="pc-rank">#{index + 1}</div>
-                            <div className="pc-details">
-                                <div className="pc-header">
-                                    <Monitor size={16} />
-                                    <span className="pc-name">{pc.id}</span>
-                                    <span className="pc-facility">{pc.facility}</span>
+                    <div className="top-pcs-list">
+                        {allComputers.map((pc, index) => (
+                            <motion.div
+                                key={`${pc.facilityId}-${pc.id}`}
+                                className="top-pc-item"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.5 + index * 0.1 }}
+                            >
+                                <div className="pc-rank">#{index + 1}</div>
+                                <div className="pc-details">
+                                    <div className="pc-header">
+                                        <Monitor size={16} />
+                                        <span className="pc-name">{pc.id}</span>
+                                        <span className="pc-facility">{pc.facility}</span>
+                                    </div>
+                                    <div className="pc-usage-bar">
+                                        <motion.div
+                                            className="usage-fill"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${(pc.usageCount / maxUsage) * 100}%` }}
+                                            transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
+                                        />
+                                    </div>
+                                    <div className="pc-stats">
+                                        <span>{pc.usageCount} sesi</span>
+                                        <span>{pc.totalHours}h total</span>
+                                    </div>
                                 </div>
-                                <div className="pc-usage-bar">
-                                    <motion.div
-                                        className="usage-fill"
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${(pc.usageCount / maxUsage) * 100}%` }}
-                                        transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
-                                    />
-                                </div>
-                                <div className="pc-stats">
-                                    <span>{pc.usageCount} sesi</span>
-                                    <span>{pc.totalHours}h total</span>
-                                    {pc.lastUsedBy && <span>Last: {pc.lastUsedBy}</span>}
-                                </div>
+                                {pc.status === 'maintenance' && (
+                                    <span className="maintenance-badge">🔧</span>
+                                )}
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* Maintenance Alerts Section */}
+                <motion.div
+                    className="alerts-section"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                >
+                    <div className="section-header">
+                        <div className="section-title-group">
+                            <AlertTriangle size={20} className="section-icon text-warning" />
+                            <h3 className="section-title">Maintenance Alerts</h3>
+                        </div>
+                        <span className="alert-count">{maintenanceAlerts.length} PC</span>
+                    </div>
+
+                    <div className="alerts-description">
+                        PC dengan &gt;200 sesi perlu maintenance segera
+                    </div>
+
+                    <div className="alerts-list">
+                        {maintenanceAlerts.length > 0 ? (
+                            maintenanceAlerts.slice(0, 5).map((pc, index) => (
+                                <motion.div
+                                    key={`alert-${pc.facilityId}-${pc.id}`}
+                                    className={`alert-item ${pc.status === 'maintenance' ? 'in-maintenance' : ''}`}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.6 + index * 0.05 }}
+                                >
+                                    <Monitor size={14} />
+                                    <span className="alert-pc">{pc.id}</span>
+                                    <span className="alert-facility">{pc.facility}</span>
+                                    <span className="alert-usage">{pc.usageCount} sesi</span>
+                                    {pc.status === 'maintenance' ? (
+                                        <span className="alert-status done">🔧 Dalam Perbaikan</span>
+                                    ) : (
+                                        <span className="alert-status pending">⚠️ Perlu Cek</span>
+                                    )}
+                                </motion.div>
+                            ))
+                        ) : (
+                            <div className="no-alerts">
+                                <CheckCircle size={24} />
+                                <span>Tidak ada alert</span>
                             </div>
-                            {pc.status === 'maintenance' && (
-                                <span className="maintenance-badge">🔧 Maintenance</span>
-                            )}
-                        </motion.div>
-                    ))}
-                </div>
-            </motion.div>
+                        )}
+                    </div>
+                </motion.div>
+            </div>
 
             {/* Recent Activity Log */}
             <motion.div
@@ -191,50 +286,6 @@ function Dashboard() {
                     })}
                 </div>
             </motion.div>
-
-            {/* Live Occupancy */}
-            <div className="section-header">
-                <h3 className="section-title">Live Occupancy Monitor</h3>
-                <span className="live-indicator">
-                    <span className="pulse-dot" /> Live
-                </span>
-            </div>
-
-            <div className="occupancy-grid">
-                {facilities.map((facility, index) => (
-                    <motion.div
-                        key={facility.id}
-                        className={`occupancy-card ${facility.status}`}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.05 }}
-                    >
-                        <div className="occupancy-header">
-                            <h4 className="occupancy-name">{facility.name}</h4>
-                            <span className={`status-badge ${facility.status}`}>
-                                {facility.status === 'maintenance' ? '🔧' : '●'}
-                            </span>
-                        </div>
-
-                        <div className="occupancy-progress">
-                            <div
-                                className="progress-bar"
-                                style={{
-                                    width: `${(facility.available / facility.capacity) * 100}%`,
-                                    background: facility.status === 'full' ? 'var(--status-full)' :
-                                        facility.status === 'limited' ? 'var(--status-warning)' :
-                                            'var(--status-available)'
-                                }}
-                            />
-                        </div>
-
-                        <div className="occupancy-stats">
-                            <span>{facility.available} / {facility.capacity} Available</span>
-                            <span>{facility.building}</span>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
         </div>
     );
 }

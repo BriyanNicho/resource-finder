@@ -163,3 +163,16 @@
 .row-partial-maintenance:hover {
     background: rgba(245, 158, 11, 0.12) !important;
 }
+
+/* Last Serviced */
+.last-serviced {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+
+.last-serviced svg {
+    color: var(--text-tertiary);
+}

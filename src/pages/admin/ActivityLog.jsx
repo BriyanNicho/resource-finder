@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { History, Clock, MapPin, Monitor, Users, Filter, Search, LogIn, LogOut, Calendar } from 'lucide-react';
+import { History, Clock, MapPin, Monitor, Filter, Search, LogIn, LogOut, Calendar, AlertTriangle } from 'lucide-react';
 import { activityLogs, facilities } from '../../utils/mockData';
 import './ActivityLog.css';
 
@@ -8,6 +8,7 @@ function AdminActivityLog() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterFacility, setFilterFacility] = useState('all');
     const [filterAction, setFilterAction] = useState('all');
+    const [warnings, setWarnings] = useState({});
 
     // Sort logs by timestamp (newest first)
     const sortedLogs = [...activityLogs].sort((a, b) =>
@@ -45,6 +46,18 @@ function AdminActivityLog() {
             default:
                 return { icon: <History size={16} />, color: 'default', label: action };
         }
+    };
+
+    const handleWarning = (userId, userName) => {
+        setWarnings(prev => {
+            const currentCount = prev[userId] || 0;
+            const newCount = currentCount + 1;
+            alert(`⚠️ Peringatan #${newCount} diberikan kepada ${userName} (${userId})`);
+            return {
+                ...prev,
+                [userId]: newCount
+            };
+        });
     };
 
     return (
@@ -107,17 +120,20 @@ function AdminActivityLog() {
                             <th>PC</th>
                             <th>Waktu</th>
                             <th>Durasi</th>
+                            <th>Moderasi</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredLogs.map((log, index) => {
                             const actionConfig = getActionConfig(log.action);
+                            const userWarnings = warnings[log.userId] || 0;
                             return (
                                 <motion.tr
                                     key={log.id}
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.03 }}
+                                    className={userWarnings > 0 ? 'row-warned' : ''}
                                 >
                                     <td>
                                         <div className="user-cell">
@@ -127,7 +143,14 @@ function AdminActivityLog() {
                                                 className="user-avatar"
                                             />
                                             <div className="user-info">
-                                                <span className="user-name">{log.userName}</span>
+                                                <span className="user-name">
+                                                    {log.userName}
+                                                    {userWarnings > 0 && (
+                                                        <span className="warning-badge" title={`${userWarnings} peringatan`}>
+                                                            ⚠️ {userWarnings}
+                                                        </span>
+                                                    )}
+                                                </span>
                                                 <span className="user-id">{log.userId}</span>
                                             </div>
                                         </div>
@@ -166,6 +189,16 @@ function AdminActivityLog() {
                                         ) : (
                                             <span className="text-muted">Ongoing</span>
                                         )}
+                                    </td>
+                                    <td>
+                                        <button
+                                            className="warn-btn"
+                                            onClick={() => handleWarning(log.userId, log.userName)}
+                                            title="Beri peringatan kepada user ini"
+                                        >
+                                            <AlertTriangle size={14} />
+                                            Peringatan
+                                        </button>
                                     </td>
                                 </motion.tr>
                             );
