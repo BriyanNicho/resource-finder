@@ -1,0 +1,118 @@
+.mini-sparkline {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    position: relative;
+    backdrop-filter: blur(10px);
+}
+
+.sparkline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+}
+
+.sparkline-title {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sparkline-indicator {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: var(--font-weight-bold);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.sparkline-indicator.bullish {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.sparkline-indicator.bearish {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.sparkline-value {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-sm);
+}
+
+.sparkline-chart {
+    position: relative;
+}
+
+.sparkline-chart svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+/* Tooltip */
+.sparkline-tooltip {
+    position: absolute;
+    transform: translateX(-50%);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.sparkline-tooltip .tooltip-label {
+    font-size: 9px;
+    color: var(--text-tertiary);
+}
+
+.sparkline-tooltip .tooltip-value {
+    font-size: 11px;
+    font-weight: var(--font-weight-bold);
+}
+
+/* Market Summary Grid */
+.market-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.market-summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.market-summary-title {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.market-summary-title svg {
+    color: var(--primary-400);
+}
+
+@media (max-width: 900px) {
+    .market-summary {
+        grid-template-columns: 1fr;
+    }
+}

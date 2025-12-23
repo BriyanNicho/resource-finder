@@ -94,8 +94,15 @@ const FacilityDetail = lazy(() => import('./pages/FacilityDetail'));
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const Assets = lazy(() => import('./pages/admin/Assets'));
 const Issues = lazy(() => import('./pages/admin/Issues'));
+const AdminUsers = lazy(() => import('./pages/admin/Users'));
+const ManageBookings = lazy(() => import('./pages/admin/ManageBookings'));
 const ActivityLog = lazy(() => import('./pages/ActivityLog'));
 const AdminActivityLog = lazy(() => import('./pages/admin/ActivityLog'));
+
+// Lazy load AdminProvider (Named Export)
+const LazyAdminProvider = lazy(() =>
+  import('./context/AdminContext').then(module => ({ default: module.AdminProvider }))
+);
 
 // Loading Spinner
 function LoadingSpinner() {
@@ -158,12 +165,18 @@ function AppRoutes() {
       {/* Admin Routes */}
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <AdminLayout />
+          <Suspense fallback={<LoadingSpinner />}>
+            <LazyAdminProvider>
+              <AdminLayout />
+            </LazyAdminProvider>
+          </Suspense>
         </ProtectedRoute>
       }>
         <Route index element={<Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>} />
+        <Route path="bookings" element={<Suspense fallback={<LoadingSpinner />}><ManageBookings /></Suspense>} />
         <Route path="assets" element={<Suspense fallback={<LoadingSpinner />}><Assets /></Suspense>} />
         <Route path="issues" element={<Suspense fallback={<LoadingSpinner />}><Issues /></Suspense>} />
+        <Route path="users" element={<Suspense fallback={<LoadingSpinner />}><AdminUsers /></Suspense>} />
         <Route path="activity" element={<Suspense fallback={<LoadingSpinner />}><AdminActivityLog /></Suspense>} />
       </Route>
 

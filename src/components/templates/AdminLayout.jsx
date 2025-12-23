@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, Calendar, Box, AlertCircle,
-    Users, LogOut, Settings
+    Users, LogOut, Settings, CalendarCheck
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth.jsx';
@@ -9,7 +9,7 @@ import './AdminLayout.css';
 
 const adminNavItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-    { path: '/admin/schedule', icon: Calendar, label: 'Jadwal' },
+    { path: '/admin/bookings', icon: CalendarCheck, label: 'Booking' },
     { path: '/admin/assets', icon: Box, label: 'Aset' },
     { path: '/admin/issues', icon: AlertCircle, label: 'Laporan' },
     { path: '/admin/users', icon: Users, label: 'Pengguna' },

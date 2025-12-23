@@ -1,20 +1,43 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Clock, AlertCircle, CheckCircle, BarChart3, Wrench, TrendingUp, Monitor, History, MapPin, LogIn, LogOut, Calendar, AlertTriangle, Download, FileText } from 'lucide-react';
-import { facilities, activityLogs } from '../../utils/mockData';
+import { Link } from 'react-router-dom';
+import {
+    Users, Clock, AlertCircle, CheckCircle, BarChart3, Wrench, TrendingUp,
+    Monitor, History, MapPin, LogIn, LogOut, Calendar, AlertTriangle, Download,
+    Search, QrCode, Building, Award
+} from 'lucide-react';
+import { useAdmin } from '../../context/AdminContext';
+import UsageTrendChart from '../../components/molecules/UsageTrendChart';
+import '../../components/molecules/UsageTrendChart.css';
 import './Dashboard.css';
 
 function Dashboard() {
+    const { bookings, facilities, activityLogs, usageHistory, stats: contextStats } = useAdmin();
     const [isDownloading, setIsDownloading] = useState(false);
+    const [scanInput, setScanInput] = useState('');
+    const [scanResult, setScanResult] = useState(null);
 
     const stats = [
-        { label: 'Total Booking', value: '124', icon: CheckCircle, color: 'text-success' },
-        { label: 'Sedang Digunakan', value: '45', icon: Users, color: 'text-primary' },
-        { label: 'Isu Aktif', value: '3', icon: AlertCircle, color: 'text-danger' },
-        { label: 'Rata-rata Durasi', value: '1.5h', icon: Clock, color: 'text-warning' },
+        { label: 'Total Booking', value: contextStats.totalBookings, icon: CheckCircle, color: 'text-success' },
+        { label: 'Booking Aktif', value: contextStats.activeBookings, icon: Users, color: 'text-primary' },
+        { label: 'Isu Aktif', value: contextStats.activeIssues, icon: AlertCircle, color: 'text-danger' },
+        { label: 'Rata-rata Durasi', value: contextStats.avgDuration, icon: Clock, color: 'text-warning' },
     ];
 
-    // Get top 3 most-used PCs from all facilities
+    // Calculate top booked facilities from REAL context data
+    const topFacilities = useMemo(() => {
+        const facilityCounts = {};
+        bookings.forEach(booking => {
+            const name = booking.facilityName;
+            facilityCounts[name] = (facilityCounts[name] || 0) + 1;
+        });
+        return Object.entries(facilityCounts)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 3);
+    }, [bookings]);
+
+    // Get top 3 most-used PCs from facilities context
     const allComputers = facilities
         .filter(f => f.computers)
         .flatMap(f => f.computers.map(pc => ({
@@ -36,7 +59,7 @@ function Dashboard() {
         .filter(pc => (pc.usageCount || 0) > 200);
 
     // Calculate max usage for bar width
-    const maxUsage = Math.max(...allComputers.map(pc => pc.usageCount || 0));
+    const maxUsage = Math.max(...allComputers.map(pc => pc.usageCount || 0)) || 1;
 
     // Get recent activity logs
     const recentLogs = [...activityLogs]
@@ -61,6 +84,8 @@ function Dashboard() {
                 return { icon: <LogOut size={14} />, color: 'danger', label: 'Check Out' };
             case 'booking':
                 return { icon: <Calendar size={14} />, color: 'primary', label: 'Booking' };
+            case 'cancel-booking':
+                return { icon: <AlertTriangle size={14} />, color: 'danger', label: 'Cancelled' };
             default:
                 return { icon: <History size={14} />, color: 'default', label: action };
         }
@@ -68,11 +93,78 @@ function Dashboard() {
 
     const handleDownloadReport = () => {
         setIsDownloading(true);
-        // Simulate download
+
+        // Generate CSV content
+        const headers = ['ID', 'User', 'Facility', 'PC', 'Date', 'Time', 'Status', 'Purpose'];
+        const csvContent = [
+            headers.join(','),
+            ...bookings.map(b => [
+                b.id,
+                `"${b.userName}"`, // Quote to handle commas in names
+                `"${b.facilityName}"`,
+                b.pcNumber || '-',
+                b.date,
+                `${b.startTime}-${b.endTime}`,
+                b.status,
+                `"${b.purpose}"`
+            ].join(','))
+        ].join('\n');
+
+        // Create blob and download link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Laporan_Booking_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+
         setTimeout(() => {
+            link.click();
+            document.body.removeChild(link);
             setIsDownloading(false);
-            alert('Laporan Bulanan berhasil diunduh!');
-        }, 1500);
+            // alert('Laporan Bulanan berhasil diunduh!'); // Removed alert for cleaner UX
+        }, 1000);
+    };
+
+    // Scan Simulator logic using Context Bookings
+    const handleScan = () => {
+        if (!scanInput.trim()) {
+            setScanResult({ status: 'error', message: 'Masukkan ID Booking' });
+            return;
+        }
+
+        const booking = bookings.find(b =>
+            b.id.toLowerCase() === scanInput.toLowerCase()
+        );
+
+        if (!booking) {
+            setScanResult({
+                status: 'invalid',
+                message: 'Booking tidak ditemukan',
+                icon: <AlertCircle size={20} />
+            });
+        } else if (booking.status === 'cancelled') {
+            setScanResult({
+                status: 'expired',
+                message: 'Booking sudah dibatalkan',
+                booking,
+                icon: <AlertTriangle size={20} />
+            });
+        } else if (booking.status === 'completed') {
+            setScanResult({
+                status: 'expired',
+                message: 'Booking sudah selesai',
+                booking,
+                icon: <AlertTriangle size={20} />
+            });
+        } else {
+            setScanResult({
+                status: 'valid',
+                message: 'Booking valid!',
+                booking,
+                icon: <CheckCircle size={20} />
+            });
+        }
     };
 
     return (
@@ -123,6 +215,107 @@ function Dashboard() {
                 })}
             </div>
 
+            {/* Scan Simulator & Booking Trend Row */}
+            <div className="dashboard-analytics-row">
+                {/* Scan Simulator */}
+                <motion.div
+                    className="scan-simulator"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    <div className="section-header">
+                        <div className="section-title-group">
+                            <QrCode size={20} className="section-icon" />
+                            <h3 className="section-title">Scan Simulator</h3>
+                        </div>
+                    </div>
+                    <p className="scan-description">Verifikasi ID Booking secara manual</p>
+
+                    <div className="scan-input-group">
+                        <input
+                            type="text"
+                            placeholder="Masukkan ID Booking (e.g. BK-001)"
+                            value={scanInput}
+                            onChange={(e) => setScanInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleScan()}
+                        />
+                        <button className="btn btn-primary" onClick={handleScan}>
+                            <Search size={16} />
+                            Verifikasi
+                        </button>
+                    </div>
+
+                    {scanResult && (
+                        <motion.div
+                            className={`scan-result ${scanResult.status}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                        >
+                            {scanResult.icon}
+                            <div className="result-content">
+                                <span className="result-message">{scanResult.message}</span>
+                                {scanResult.booking && (
+                                    <div className="result-details">
+                                        <span>{scanResult.booking.userName}</span>
+                                        <span>•</span>
+                                        <span>{scanResult.booking.facilityName}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </motion.div>
+
+                {/* Top Booked Facilities */}
+                <motion.div
+                    className="top-facilities"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                >
+                    <div className="section-header">
+                        <div className="section-title-group">
+                            <Award size={20} className="section-icon text-warning" />
+                            <h3 className="section-title">Fasilitas Paling Laku</h3>
+                        </div>
+                    </div>
+
+                    <div className="facilities-list">
+                        {topFacilities.map((facility, index) => (
+                            <motion.div
+                                key={facility.name}
+                                className="facility-item"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.6 + index * 0.1 }}
+                            >
+                                <span className="facility-rank">#{index + 1}</span>
+                                <Building size={16} />
+                                <span className="facility-name">{facility.name}</span>
+                                <span className="facility-count">{facility.count} booking</span>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Booking Trend Chart */}
+            <motion.div
+                className="booking-trend-section"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+            >
+                <div className="section-header">
+                    <div className="section-title-group">
+                        <TrendingUp size={20} className="section-icon" />
+                        <h3 className="section-title">Booking per Hari (30 Hari)</h3>
+                    </div>
+                </div>
+                <UsageTrendChart data={usageHistory} width={800} height={180} />
+            </motion.div>
+
             {/* Two Column Layout */}
             <div className="dashboard-grid">
                 {/* Asset Insights Section */}
@@ -130,7 +323,7 @@ function Dashboard() {
                     className="insights-section"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
+                    transition={{ delay: 0.6 }}
                 >
                     <div className="section-header">
                         <div className="section-title-group">
@@ -154,7 +347,7 @@ function Dashboard() {
                                 className="top-pc-item"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.5 + index * 0.1 }}
+                                transition={{ delay: 0.7 + index * 0.1 }}
                             >
                                 <div className="pc-rank">#{index + 1}</div>
                                 <div className="pc-details">
@@ -168,7 +361,7 @@ function Dashboard() {
                                             className="usage-fill"
                                             initial={{ width: 0 }}
                                             animate={{ width: `${(pc.usageCount / maxUsage) * 100}%` }}
-                                            transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
+                                            transition={{ delay: 0.9 + index * 0.1, duration: 0.5 }}
                                         />
                                     </div>
                                     <div className="pc-stats">
@@ -189,7 +382,7 @@ function Dashboard() {
                     className="alerts-section"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
+                    transition={{ delay: 0.7 }}
                 >
                     <div className="section-header">
                         <div className="section-title-group">
@@ -211,7 +404,7 @@ function Dashboard() {
                                     className={`alert-item ${pc.status === 'maintenance' ? 'in-maintenance' : ''}`}
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.6 + index * 0.05 }}
+                                    transition={{ delay: 0.8 + index * 0.05 }}
                                 >
                                     <Monitor size={14} />
                                     <span className="alert-pc">{pc.id}</span>
@@ -239,14 +432,15 @@ function Dashboard() {
                 className="activity-log-section"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.8 }}
             >
                 <div className="section-header">
                     <div className="section-title-group">
                         <History size={20} className="section-icon" />
                         <h3 className="section-title">Recent Activity Log</h3>
                     </div>
-                    <a href="/admin/activity" className="view-all-link">Lihat Semua →</a>
+                    {/* UPDATED: Link instead of a tag for SPA navigation */}
+                    <Link to="/admin/activity" className="view-all-link">Lihat Semua →</Link>
                 </div>
 
                 <div className="activity-table-compact">
@@ -258,7 +452,7 @@ function Dashboard() {
                                 className="activity-row"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.7 + index * 0.05 }}
+                                transition={{ delay: 0.9 + index * 0.05 }}
                             >
                                 <img src={log.userAvatar} alt="" className="activity-avatar" />
                                 <div className="activity-info">
