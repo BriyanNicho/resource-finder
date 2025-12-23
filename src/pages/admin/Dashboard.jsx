@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { Users, Clock, AlertCircle, CheckCircle, BarChart3, Wrench, TrendingUp, Monitor } from 'lucide-react';
-import { facilities } from '../../utils/mockData';
+import { Users, Clock, AlertCircle, CheckCircle, BarChart3, Wrench, TrendingUp, Monitor, History, MapPin, LogIn, LogOut, Calendar } from 'lucide-react';
+import { facilities, activityLogs } from '../../utils/mockData';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -24,6 +24,34 @@ function Dashboard() {
 
     // Calculate max usage for bar width
     const maxUsage = Math.max(...allComputers.map(pc => pc.usageCount || 0));
+
+    // Get recent activity logs
+    const recentLogs = [...activityLogs]
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 5);
+
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const getActionConfig = (action) => {
+        switch (action) {
+            case 'check-in':
+                return { icon: <LogIn size={14} />, color: 'success', label: 'Check In' };
+            case 'check-out':
+                return { icon: <LogOut size={14} />, color: 'danger', label: 'Check Out' };
+            case 'booking':
+                return { icon: <Calendar size={14} />, color: 'primary', label: 'Booking' };
+            default:
+                return { icon: <History size={14} />, color: 'default', label: action };
+        }
+    };
 
     return (
         <div className="admin-dashboard">
@@ -100,6 +128,7 @@ function Dashboard() {
                                 <div className="pc-stats">
                                     <span>{pc.usageCount} sesi</span>
                                     <span>{pc.totalHours}h total</span>
+                                    {pc.lastUsedBy && <span>Last: {pc.lastUsedBy}</span>}
                                 </div>
                             </div>
                             {pc.status === 'maintenance' && (
@@ -107,6 +136,59 @@ function Dashboard() {
                             )}
                         </motion.div>
                     ))}
+                </div>
+            </motion.div>
+
+            {/* Recent Activity Log */}
+            <motion.div
+                className="activity-log-section"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+            >
+                <div className="section-header">
+                    <div className="section-title-group">
+                        <History size={20} className="section-icon" />
+                        <h3 className="section-title">Recent Activity Log</h3>
+                    </div>
+                    <a href="/admin/activity" className="view-all-link">Lihat Semua →</a>
+                </div>
+
+                <div className="activity-table-compact">
+                    {recentLogs.map((log, index) => {
+                        const actionConfig = getActionConfig(log.action);
+                        return (
+                            <motion.div
+                                key={log.id}
+                                className="activity-row"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.7 + index * 0.05 }}
+                            >
+                                <img src={log.userAvatar} alt="" className="activity-avatar" />
+                                <div className="activity-info">
+                                    <span className="activity-user">{log.userName}</span>
+                                    <span className={`activity-action-badge ${actionConfig.color}`}>
+                                        {actionConfig.icon}
+                                        {actionConfig.label}
+                                    </span>
+                                </div>
+                                <div className="activity-meta">
+                                    <span className="activity-facility">
+                                        <MapPin size={12} />
+                                        {log.facility}
+                                    </span>
+                                    {log.pcNumber && (
+                                        <span className="activity-pc">
+                                            <Monitor size={12} />
+                                            {log.pcNumber}
+                                        </span>
+                                    )}
+                                </div>
+                                <span className="activity-time">{formatTimestamp(log.timestamp)}</span>
+                            </motion.div>
+                        );
+                    })}
                 </div>
             </motion.div>
 
