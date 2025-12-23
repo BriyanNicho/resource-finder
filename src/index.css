@@ -153,6 +153,11 @@ body {
   overflow-x: hidden;
 }
 
+select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
 #root {
   min-height: 100vh;
   display: flex;
