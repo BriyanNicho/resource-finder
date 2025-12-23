@@ -1,0 +1,186 @@
+.admin-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-elevated);
+}
+
+.stat-icon-wrapper.text-success {
+    color: var(--status-available);
+    background: var(--status-available-bg);
+}
+
+.stat-icon-wrapper.text-primary {
+    color: var(--primary-400);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.stat-icon-wrapper.text-danger {
+    color: var(--status-full);
+    background: var(--status-full-bg);
+}
+
+.stat-icon-wrapper.text-warning {
+    color: var(--status-warning);
+    background: var(--status-warning-bg);
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+/* Occupancy Grid */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    color: var(--status-full);
+    text-transform: uppercase;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--status-full);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+.occupancy-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+}
+
+.occupancy-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    transition: all var(--transition-fast);
+}
+
+.occupancy-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.occupancy-card.full {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.occupancy-card.maintenance {
+    opacity: 0.7;
+    border-style: dashed;
+}
+
+.occupancy-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.occupancy-name {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+}
+
+.status-badge {
+    font-size: 12px;
+}
+
+.status-badge.available {
+    color: var(--status-available);
+}
+
+.status-badge.warning {
+    color: var(--status-warning);
+}
+
+.status-badge.full {
+    color: var(--status-full);
+}
+
+.status-badge.maintenance {
+    color: var(--text-secondary);
+}
+
+.occupancy-progress {
+    height: 6px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-sm);
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.5s ease-out;
+}
+
+.occupancy-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .occupancy-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

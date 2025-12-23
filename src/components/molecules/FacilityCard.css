@@ -1,0 +1,111 @@
+.facility-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.facility-card:hover {
+    border-color: var(--border-secondary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.facility-image {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    overflow: hidden;
+}
+
+.facility-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.facility-card:hover .facility-image img {
+    transform: scale(1.05);
+}
+
+.facility-status {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+}
+
+.facility-content {
+    padding: var(--space-md);
+}
+
+.facility-name {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.facility-meta {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.facility-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+}
+
+.spec-chip {
+    padding: 2px 8px;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+}
+
+.spec-chip.more {
+    color: var(--primary-400);
+}
+
+.facility-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border-primary);
+}
+
+.distance {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.chevron {
+    color: var(--text-tertiary);
+    transition: transform var(--transition-fast);
+}
+
+.facility-card:hover .chevron {
+    transform: translateX(4px);
+    color: var(--primary-400);
+}
+
+/* Horizontal scroll variant */
+.facility-card.horizontal {
+    min-width: 280px;
+    flex-shrink: 0;
+}

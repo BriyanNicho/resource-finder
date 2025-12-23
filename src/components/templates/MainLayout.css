@@ -1,0 +1,13 @@
+.main-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+}
+
+.main-content {
+    flex: 1;
+    padding-top: var(--header-height);
+    padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+    overflow-y: auto;
+}
