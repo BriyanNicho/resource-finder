@@ -9,6 +9,7 @@ import {
 import { useAdmin } from '../../context/AdminContext';
 import UsageTrendChart from '../../components/molecules/UsageTrendChart';
 import '../../components/molecules/UsageTrendChart.css';
+import QRScanner from '../../components/admin/QRScanner';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -16,6 +17,7 @@ function Dashboard() {
     const [isDownloading, setIsDownloading] = useState(false);
     const [scanInput, setScanInput] = useState('');
     const [scanResult, setScanResult] = useState(null);
+    const [showScanner, setShowScanner] = useState(false);
 
     const stats = [
         { label: 'Total Booking', value: contextStats.totalBookings, icon: CheckCircle, color: 'text-success' },
@@ -127,14 +129,16 @@ function Dashboard() {
     };
 
     // Scan Simulator logic using Context Bookings
-    const handleScan = () => {
-        if (!scanInput.trim()) {
+    const handleScan = (scannedId = null) => {
+        const idToVerify = typeof scannedId === 'string' ? scannedId : scanInput;
+
+        if (!idToVerify.trim()) {
             setScanResult({ status: 'error', message: 'Masukkan ID Booking' });
             return;
         }
 
         const booking = bookings.find(b =>
-            b.id.toLowerCase() === scanInput.toLowerCase()
+            b.id.toLowerCase() === idToVerify.toLowerCase()
         );
 
         if (!booking) {
@@ -164,6 +168,12 @@ function Dashboard() {
                 booking,
                 icon: <CheckCircle size={20} />
             });
+        }
+
+        // If it was a successful camera scan, close the scanner
+        if (typeof scannedId === 'string') {
+            setShowScanner(false);
+            setScanInput(scannedId); // Fill input for visibility
         }
     };
 
@@ -227,10 +237,16 @@ function Dashboard() {
                     <div className="section-header">
                         <div className="section-title-group">
                             <QrCode size={20} className="section-icon" />
-                            <h3 className="section-title">Scan Simulator</h3>
+                            <h3 className="section-title">Scanner Booking</h3>
                         </div>
+                        <button
+                            className="btn btn-sm btn-secondary"
+                            onClick={() => setShowScanner(true)}
+                        >
+                            <QrCode size={14} /> Scan Kamera
+                        </button>
                     </div>
-                    <p className="scan-description">Verifikasi ID Booking secara manual</p>
+                    <p className="scan-description">Verifikasi ID Booking via Kamera atau ID</p>
 
                     <div className="scan-input-group">
                         <input
@@ -266,6 +282,14 @@ function Dashboard() {
                         </motion.div>
                     )}
                 </motion.div>
+
+                {/* Real QR Scanner Modal */}
+                {showScanner && (
+                    <QRScanner
+                        onScan={(data) => handleScan(data)}
+                        onClose={() => setShowScanner(false)}
+                    />
+                )}
 
                 {/* Top Booked Facilities */}
                 <motion.div

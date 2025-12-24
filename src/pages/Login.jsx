@@ -82,30 +82,7 @@ function Login() {
                     </button>
                 </form>
 
-                {/* Developer Quick Login Buttons - Only show if Supabase NOT configured (Mock Mode) */}
-                {!isSupabaseConfigured() && (
-                    <div className="demo-credentials">
-                        <p className="text-center font-medium mb-sm">Dev: Quick Login</p>
-                        <div className="flex gap-sm">
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-secondary flex-1"
-                                onClick={() => handleLogin(null, 'admin@kampus.ac.id', 'admin123')}
-                            >
-                                <Shield size={14} />
-                                Admin
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-secondary flex-1"
-                                onClick={() => handleLogin(null, 'mahasiswa@kampus.ac.id', 'mhs123')}
-                            >
-                                <User size={14} />
-                                Mhs
-                            </button>
-                        </div>
-                    </div>
-                )}
+
             </div>
         </div>
     );

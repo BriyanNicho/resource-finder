@@ -1,6 +1,7 @@
 import { useState, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth.jsx';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import './index.css';
 
 
@@ -68,9 +69,11 @@ function AppRoutes() {
       {/* Public Route */}
       <Route path="/login" element={
         user ? <Navigate to={user.role === 'admin' ? '/admin' : '/'} replace /> : (
-          <Suspense fallback={<LoadingSpinner />}>
-            <Login />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Login />
+            </Suspense>
+          </ErrorBoundary>
         )
       } />
 
@@ -80,22 +83,24 @@ function AppRoutes() {
           <MainLayout />
         </ProtectedRoute>
       }>
-        <Route index element={<Suspense fallback={<LoadingSpinner />}><Home /></Suspense>} />
-        <Route path="explore" element={<Suspense fallback={<LoadingSpinner />}><Explore /></Suspense>} />
-        <Route path="my-booking" element={<Suspense fallback={<LoadingSpinner />}><MyBooking /></Suspense>} />
-        <Route path="profile" element={<Suspense fallback={<LoadingSpinner />}><Profile /></Suspense>} />
-        <Route path="facility/:id" element={<Suspense fallback={<LoadingSpinner />}><FacilityDetail /></Suspense>} />
-        <Route path="activity" element={<Suspense fallback={<LoadingSpinner />}><ActivityLog /></Suspense>} />
+        <Route index element={<ErrorBoundary><Suspense fallback={<LoadingSpinner />}><Home /></Suspense></ErrorBoundary>} />
+        <Route path="explore" element={<ErrorBoundary><Suspense fallback={<LoadingSpinner />}><Explore /></Suspense></ErrorBoundary>} />
+        <Route path="my-booking" element={<ErrorBoundary><Suspense fallback={<LoadingSpinner />}><MyBooking /></Suspense></ErrorBoundary>} />
+        <Route path="profile" element={<ErrorBoundary><Suspense fallback={<LoadingSpinner />}><Profile /></Suspense></ErrorBoundary>} />
+        <Route path="facility/:id" element={<ErrorBoundary><Suspense fallback={<LoadingSpinner />}><FacilityDetail /></Suspense></ErrorBoundary>} />
+        <Route path="activity" element={<ErrorBoundary><Suspense fallback={<LoadingSpinner />}><ActivityLog /></Suspense></ErrorBoundary>} />
       </Route>
 
       {/* Admin Routes */}
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <Suspense fallback={<LoadingSpinner />}>
-            <LazyAdminProvider>
-              <AdminLayout />
-            </LazyAdminProvider>
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner />}>
+              <LazyAdminProvider>
+                <AdminLayout />
+              </LazyAdminProvider>
+            </Suspense>
+          </ErrorBoundary>
         </ProtectedRoute>
       }>
         <Route index element={<Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>} />
@@ -115,7 +120,7 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router basename="/resource-finder">
         <AppRoutes />
       </Router>
     </AuthProvider>
